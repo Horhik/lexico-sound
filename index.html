@@ -34,7 +34,6 @@
             const getSrc = new RegExp('<audio.+?src="(.+?)".+?/?>');
             const site = fetch(`https://www.lexico.com/definition/${word}`, {
                 method: 'GET',
-                  mode: 'no-cors',
                 headers: {
                     'Content-Type': 'text/html',
                 },
