@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get lexico.com word sound</title>
+</head>
+
+<body>
+    <input type="text" name="type word" id="search-word">
+    <input type="button" value="search" id="search-button">
+    <code></code>
+    <script>
+
+        let btn  = document.getElementById("search-button");
+        let text = document.getElementById("search-word");
+        let res = document.querySelector("code")
+        const searchAudio = () =>{
+            let txt = text.value;
+            let result = getAudio(txt).then(result => {
+            res.innerText = result;
+            });
+        }
+        const getAudio =  word => {
+            const getSrc = new RegExp('<audio.+?src="(.+?)".+?/?>');
+            const site =fetch(`https://www.lexico.com/definition/${word}`).then(res => res.text()).then(html =>  html.match(getSrc)[1]);
+            return site;
+        };
+        btn.addEventListener("click",searchAudio); 
+    </script>
+</body>
+
+</html>
