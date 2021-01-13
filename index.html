@@ -10,6 +10,7 @@
 <body>
     <input type="text" name="type word" id="search-word">
     <input type="button" value="search" id="search-button">
+    <br>
     <code></code>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
@@ -18,30 +19,46 @@
     <script>
         let btn = document.getElementById("search-button");
         let text = document.getElementById("search-word");
-        let res = document.querySelector("code")
-        jQuery.ajaxPrefilter(function (options) {
-            if (options.crossDomain && jQuery.support.cors) {
-                options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
-            }
-        });
+        let res = document.querySelector("code");
+
+
+
+        (function () {
+            var cors_api_host = 'cors-anywhere.herokuapp.com';
+            var cors_api_url = 'https://' + cors_api_host + '/';
+            var slice = [].slice;
+            var origin = window.location.protocol + '//' + window.location.host;
+            var open = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function () {
+                var args = slice.call(arguments);
+                var targetOrigin = /^https?:\/\/([^\/]+)/i.exec(args[1]);
+                if (targetOrigin && targetOrigin[0].toLowerCase() !== origin &&
+                    targetOrigin[1] !== cors_api_host) {
+                    args[1] = cors_api_url + args[1];
+                }
+                return open.apply(this, args);
+            };
+        })();
         const searchAudio = () => {
             let txt = text.value;
-            let result = getAudio(txt).then(result => {
-                res.innerText = result;
-            });
+            let result = getAudio(txt);
         }
         const getAudio = word => {
             const getSrc = new RegExp('<audio.+?src="(.+?)".+?/?>');
-            const site = fetch(`https://www.lexico.com/definition/${word}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'text/html',
-                },
-            }).then(resu => resu.text()).then(html =>{
-                console.log(html)
-                html.match(getSrc)[1]
-            })
-            return site;
+            console.log(`printint ${word}`)
+            let site =
+                fetch(
+                    `https://api.allorigins.win/get?url=${encodeURIComponent('https://www.lexico.com/definition/${word}')}`
+                    )
+                .then(response => {
+                    if (response.ok) return response.json()
+                    throw new Error('Network response was not ok.')
+                })
+                .then(html => {
+                     let page = html.contents;
+                     res.innerText = page.match(getSrc)[1]
+                });
+
         };
         btn.addEventListener("click", searchAudio);
     </script>
