@@ -48,7 +48,7 @@
             console.log(`printint ${word}`)
             let site =
                 fetch(
-                    `https://api.allorigins.win/get?url=${encodeURIComponent('https://www.lexico.com/definition/${word}')}`
+                    `https://api.allorigins.win/get?url=${encodeURIComponent('https://www.lexico.com/definition/' + word)}`
                     )
                 .then(response => {
                     if (response.ok) return response.json()
